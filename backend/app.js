@@ -7,8 +7,11 @@ const password = process.env.DB_PASSWORD;
 const mongoose = require('mongoose');
 
 const app = express();
+const path = require('path');
 
-const userRoutes = require('./routes/user')
+const bookRoutes = require('./routes/book');
+const userRoutes = require('./routes/user');
+
 
 mongoose.connect('mongodb+srv://' + name + ':' + password +'@prod-mvg-app.ah6pzhb.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
@@ -25,7 +28,9 @@ app.use((req, res, next) => {
     next();
   });
 
+app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes);
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 
 
