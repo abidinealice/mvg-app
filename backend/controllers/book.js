@@ -16,7 +16,7 @@ exports.createBook = (req, res, next) => {
   .catch(error => { res.status(400).json( { error })})
 };
 
-exports.getAllBook = (req, res, next) => {
+exports.getAllBooks = (req, res, next) => {
   Book.find()
   .then((books) => {res.status(200).json(books);})
   .catch((error) => {res.status(400).json({error: error});});
@@ -28,18 +28,50 @@ exports.getOneBook = (req, res, next) => {
   .catch((error) => {res.status(404).json({error: error});});
 };
 
+exports.modifyBook = (req, res, next) => {
+  delete req.body.imageUrl;
+  const bookObject = req.file ? {
+      ...JSON.parse(req.body.book),
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.filepath}`
+  } : { ...req.body };
+  delete bookObject._userId;
+  delete bookObject._id;
+  delete bookObject.ratings;
+  delete bookObject.averageRating;
+  Book.findOne({_id: req.params.id})
+      .then((book) => {
+          if (book.userId != req.auth.userId) {
+              res.status(403).json({ message : 'Non authorisé !'});
+          } else {
+            //suppression ancienne image
+            const filename = book.imageUrl.split('/images/')[1];
+            if(req.file){
+              fs.unlinkSync(`images/${filename}`);
+            } 
+
+            Book.updateOne({ _id: req.params.id}, { ...bookObject})
+              .then(() => res.status(200).json({message : 'Objet modifié!'}))
+              .catch(error => res.status(401).json({ error }));
+          }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(400).json({ error });
+      });
+};
+
 exports.deleteBook = (req, res, next) => {
   Book.findOne({ _id: req.params.id})
       .then(book => {
           if (book.userId != req.auth.userId) {
-              res.status(401).json({message: 'Non authorisé !'});
+              res.status(403).json({message: 'Non authorisé !'});
           } else {
               const filename = book.imageUrl.split('/images/')[1];
-              fs.unlink(`images/${filename}`, () => {
-                Book.deleteOne({_id: req.params.id})
-                      .then(() => { res.status(200).json({message: 'Objet supprimé !'})})
-                      .catch(error => res.status(401).json({ error }));
-              });
+              fs.unlinkSync(`images/${filename}`);
+              Book.deleteOne({_id: req.params.id})
+                    .then(() => { res.status(200).json({message: 'Objet supprimé !'})})
+                    .catch(error => res.status(401).json({ error }));
+
           }
       })
       .catch( error => {
