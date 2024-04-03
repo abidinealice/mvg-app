@@ -125,9 +125,9 @@ exports.ratingBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id})
     .then(book => {
       const newRatings = book.ratings;
-      const userIds = newRatings.map(rating=>rating.userId);
+      const userIds = newRatings.map(rating=>rating.userId.toString());
       //Check if user has already rate the book
-      if(userIds.includes(req.auth.userId)){
+      if(userIds.includes(req.auth.userId.toString())){
         res.status(403).json({message: 'Not authorized !'});
       }else{
         //New rating added to ratings array
@@ -144,7 +144,7 @@ exports.ratingBook = (req, res, next) => {
       }})
     .catch((error) => {
       console.error(error);
-      res.status(400).json({ error });
+      res.status(404).json({ error });
     });
   }
 };
