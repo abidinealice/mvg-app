@@ -19,7 +19,7 @@ exports.createBook = (req, res, next) => {
   book
     .save()
     .then(() => {
-      res.status(201).json({ message: "Objet enregistré !" })
+      res.status(201).json({ message: "Object created!" })
     })
     .catch((error) => {
       res.status(400).json({ error })
@@ -88,7 +88,7 @@ exports.modifyBook = (req, res, next) => {
     .then((book) => {
       //Verification user
       if (book.userId != req.auth.userId) {
-        res.status(403).json({ message: "Non authorisé !" })
+        res.status(403).json({ message: "Not authorized!" })
       } else {
         //Delete old file if new file added
         const filename = book.imageUrl.split("/images/")[1]
@@ -97,7 +97,7 @@ exports.modifyBook = (req, res, next) => {
         }
         //Update book with new data in database
         Book.updateOne({ _id: req.params.id }, { ...bookObject })
-          .then(() => res.status(200).json({ message: "Objet modifié!" }))
+          .then(() => res.status(200).json({ message: "Object modified!" }))
           .catch((error) => res.status(401).json({ error }))
       }
     })
@@ -113,7 +113,7 @@ exports.deleteBook = (req, res, next) => {
     .then((book) => {
       //Verification user
       if (book.userId != req.auth.userId) {
-        res.status(403).json({ message: "Not authorized !" })
+        res.status(403).json({ message: "Not authorized!" })
       } else {
         //Delete file in folder
         const filename = book.imageUrl.split("/images/")[1]
@@ -121,7 +121,7 @@ exports.deleteBook = (req, res, next) => {
         //Delete book from database
         Book.deleteOne({ _id: req.params.id })
           .then(() => {
-            res.status(200).json({ message: "Objet supprimé !" })
+            res.status(200).json({ message: "Object deleted!" })
           })
           .catch((error) => res.status(401).json({ error }))
       }
@@ -136,7 +136,7 @@ exports.deleteBook = (req, res, next) => {
 exports.ratingBook = (req, res, next) => {
   //Check if right user
   if (req.auth.userId.toString() !== req.body.userId) {
-    res.status(403).json({ message: "Not authorized !" })
+    res.status(403).json({ message: "Not authorized!" })
   } else {
     const newGrade = req.body.rating
     //Check if rating is between 0 and 5
@@ -151,7 +151,7 @@ exports.ratingBook = (req, res, next) => {
           const userIds = newRatings.map((rating) => rating.userId.toString())
           //Check if user has already rate the book
           if (userIds.includes(req.auth.userId.toString())) {
-            res.status(403).json({ message: "Not authorized !" })
+            res.status(403).json({ message: "Not authorized!" })
           } else {
             //New rating added to ratings array
             newRatings.push(ratingObject)
