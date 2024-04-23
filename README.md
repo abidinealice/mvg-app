@@ -10,9 +10,9 @@ Le projet a été testé sur node v21.6.2.
 
 ## Comment se connecter à MongoDB ?
 
-Les données se trouvent dans le fichier .env qui n'est pas présent sur le repo GitHub.
+Le fichier .env contient les données nécessaire à la connection à MongoDB. Il a été mis à votre disposition.
 
-Vous pouvez vous connecter en utilisant cet utilisateur qui peut lire toutes donées de la base de donnée :
+Dans le cas où les valeurs des clés ne seraient pas présentes dans le fichier .env vous pouvez vous connecter en utilisant cet utilisateur qui peut lire et modifier toutes donées de la base de donnée :
 
-UTILISATEUR : kevinTest
-MOT DE PASSE : testmvg
+DB_NAME=kevinTest
+DB_PASSWORD=testmvg
